@@ -1,14 +1,3 @@
-name: CI Pipeline
-
-on:
-  push:
-    branches:
-      - main
-      - feature/devops-setup
-  pull_request:
-    branches:
-      - main
-      - feature/devops-setup
 
 jobs:
   build:
