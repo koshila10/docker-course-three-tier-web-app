@@ -1,22 +1,17 @@
-FROM python:3.11-slim
+# Use a smaller image
+FROM node:18-alpine
 
-WORKDIR /api
+# Add non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# install required packages for system --> MUST RUN THIS FOR THIS TO WORK!
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy the Python dependencies file first to leverage Docker cache layers
-COPY requirements.txt ./
+WORKDIR /app
 
 COPY . .
 
-# RUN pip install mysqlclient - already in the requirements.txt
+RUN npm install
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Use non-root user
+USER appuser
 
-EXPOSE 5001
+CMD ["npm", "start"]
 
-CMD ["python", "api.py"]
