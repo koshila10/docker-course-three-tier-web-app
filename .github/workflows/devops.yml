@@ -17,6 +17,6 @@ jobs:
       - name: Build Containers
         run: docker-compose build
 
-      - name: Run App
+      - name: Run Containers
         run: docker-compose up -d
 
