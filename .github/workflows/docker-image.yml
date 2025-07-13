@@ -11,7 +11,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     services:
       mysql:
         image: mysql:5.7
@@ -27,22 +26,16 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
+      - uses: actions/checkout@v4
 
       - name: Build Docker Compose Services
         run: |
-          docker-compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml build
 
       - name: Run Containers
         run: |
-          docker-compose -f docker-compose.yml up -d
-          sleep 20  # wait for services to initialize
+          docker compose -f docker-compose.yml up -d
+          sleep 20
 
       - name: Check Running Containers
         run: docker ps
@@ -53,4 +46,4 @@ jobs:
           curl -f http://localhost:5001/api/employees || exit 1
 
       - name: Tear Down
-        run: docker-compose down
+        run: docker compose down
