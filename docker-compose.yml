@@ -1,35 +1,38 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
     build:
-      context: ./web
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "5000:5000"
     depends_on:
-      - app
+      - api
+    volumes:
+      - ./app:/app
 
-  app:
+  api:
     build:
-      context: ./app
-      dockerfile: Dockerfile
+      context: ./api
+    ports:
+      - "8000:8000"
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgres://user:password@db:5432/mydb
+    volumes:
+      - ./api:/api
 
   db:
-    image: postgres:15-alpine
+    image: postgres:13
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
 
 volumes:
-  db-data:
+  pgdata:
 
