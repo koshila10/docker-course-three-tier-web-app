@@ -1,34 +1,34 @@
 name: CI Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main      # or your default branch
+  pull_request:
 
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx (for modern Docker builds)
+        uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub
+      - name: Login to DockerHub (optional, if you push images)
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}    # set these in repo secrets
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install latest Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
-
-      - name: Build Docker Containers
+      - name: Build Docker containers
         run: docker-compose build
 
-      - name: Run Containers
+      - name: Start containers in detached mode
         run: docker-compose up -d
+
+      - name: Check running containers
+        run: docker ps
 
