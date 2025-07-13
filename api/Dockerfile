@@ -1,17 +1,7 @@
-# Use a smaller image
-FROM node:18-alpine
-
-# Add non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-WORKDIR /app
-
+FROM python:3.9-slim
+WORKDIR /api
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY . .
-
-RUN npm install
-
-# Use non-root user
-USER appuser
-
-CMD ["npm", "start"]
+CMD ["python", "app.py"]
 

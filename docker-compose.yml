@@ -3,31 +3,32 @@ version: "3.8"
 services:
   web:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./web           # Use the web folder for the web service
+      dockerfile: Dockerfile   # Dockerfile inside web folder (if you have one)
     ports:
       - "5000:5000"
     depends_on:
       - api
     volumes:
-      - ./app:/app
+      - ./web:/app             # Mount web folder to /app inside container
 
   api:
     build:
-      context: ./api
+      context: ./api          # Build API from api folder
+      dockerfile: Dockerfile  # Dockerfile inside api folder
     ports:
       - "8000:8000"
     depends_on:
       - db
     volumes:
-      - ./api:/api
+      - ./api:/api            # Mount api folder to /api inside container
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
