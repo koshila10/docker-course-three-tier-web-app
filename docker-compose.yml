@@ -3,31 +3,21 @@ version: '3.8'
 services:
   web:
     build:
-      context: .
-      dockerfile: Dockerfile.web  # Rename your web Dockerfile or keep Dockerfile
+      context: ./web
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:
       - app
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   app:
     build:
-      context: .
-      dockerfile: Dockerfile.web # Rename your app Dockerfile or keep Dockerfile
+      context: ./app
+      dockerfile: Dockerfile
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgres://user:password@db:5432/mydb
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   db:
     image: postgres:15-alpine
@@ -39,11 +29,6 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 volumes:
   db-data:
