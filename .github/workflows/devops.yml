@@ -5,9 +5,10 @@ on: [push, pull_request]
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
+
     defaults:
       run:
-        working-directory: docker-course-three-tier-web-app
+        working-directory: docker-course-three-tier-web-app  # Set this to the folder with docker-compose.yml
 
     steps:
       - uses: actions/checkout@v3
