@@ -8,7 +8,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: docker-course-three-tier-web-app  # Set this to the folder with docker-compose.yml
+        working-directory: . # Set this to the folder with docker-compose.yml
 
     steps:
       - uses: actions/checkout@v3
