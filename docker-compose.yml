@@ -1,27 +1,27 @@
 version: "3.8"
 
 services:
-  web:
+  frontend:
     build:
-      context: ./web           # Use the web folder for the web service
-      dockerfile: Dockerfile   # Dockerfile inside web folder (if you have one)
+      context: ./frontend         # Folder should be ./frontend
+      dockerfile: Dockerfile      # Dockerfile inside ./frontend
     ports:
-      - "5000:5000"
+      - "5002:5000"               # Use 5002 to avoid conflict with API (if API uses 5000 internally too)
     depends_on:
       - api
     volumes:
-      - ./web:/app             # Mount web folder to /app inside container
+      - ./frontend:/app           # Mount frontend folder
 
   api:
     build:
-      context: ./api          # Build API from api folder
-      dockerfile: Dockerfile  # Dockerfile inside api folder
+      context: ./api
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "5000:5000"
     depends_on:
       - db
     volumes:
-      - ./api:/api            # Mount api folder to /api inside container
+      - ./api:/api
 
   db:
     image: postgres:13
