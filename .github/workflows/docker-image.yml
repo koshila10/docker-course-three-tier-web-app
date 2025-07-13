@@ -11,6 +11,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     services:
       mysql:
         image: mysql:5.7
@@ -26,24 +27,39 @@ jobs:
           --health-retries=5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Build Docker Compose Services
+      - name: Build and start Docker Compose services
         run: |
-          docker compose -f docker-compose.yml build
+          docker compose build
+          docker compose up -d
 
-      - name: Run Containers
+      - name: Show running containers and logs (debug)
         run: |
-          docker compose -f docker-compose.yml up -d
-          sleep 20
+          docker ps
+          docker compose logs --tail=50
 
-      - name: Check Running Containers
-        run: docker ps
-
-      - name: Run Frontend and API Health Check
+      - name: Wait for frontend and API to be ready
         run: |
-          curl -f http://localhost:5000 || exit 1
-          curl -f http://localhost:5001/api/employees || exit 1
+          for i in {1..30}; do
+            if curl -f http://localhost:5000; then
+              echo "Frontend is up!"
+              break
+            else
+              echo "Waiting for frontend..."
+              sleep 2
+            fi
+          done
+          for i in {1..30}; do
+            if curl -f http://localhost:5001/api/employees; then
+              echo "API is up!"
+              break
+            else
+              echo "Waiting for API..."
+              sleep 2
+            fi
+          done
 
-      - name: Tear Down
+      - name: Tear down Docker Compose services
         run: docker compose down
