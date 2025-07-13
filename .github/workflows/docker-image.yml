@@ -1,0 +1,56 @@
+name: CI/CD - Build and Test Docker App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: employees
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Build Docker Compose Services
+        run: |
+          docker-compose -f docker-compose.yml build
+
+      - name: Run Containers
+        run: |
+          docker-compose -f docker-compose.yml up -d
+          sleep 20  # wait for services to initialize
+
+      - name: Check Running Containers
+        run: docker ps
+
+      - name: Run Frontend and API Health Check
+        run: |
+          curl -f http://localhost:5000 || exit 1
+          curl -f http://localhost:5001/api/employees || exit 1
+
+      - name: Tear Down
+        run: docker-compose down
