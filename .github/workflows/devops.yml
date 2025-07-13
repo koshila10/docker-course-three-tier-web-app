@@ -6,10 +6,6 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: . # Set this to the folder with docker-compose.yml
-
     steps:
       - uses: actions/checkout@v3
 
